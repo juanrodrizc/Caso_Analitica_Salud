@@ -45,10 +45,10 @@ plt.show()
 ####### reducir su tamaño y convertir en array ################
 ################################################################
 
-width = 100 #tamaño para reescalar imágen
+width = 80 #tamaño para reescalar imágen
 num_classes = 2 #clases variable respuesta
-trainpath = 'data_brain/training/'
-testpath = 'data_brain/testing/'
+trainpath = 'training/'
+testpath = 'testing/'
 
 x_train, y_train= fn.img2data(trainpath) #Run in train
 x_test, y_test = fn.img2data(testpath) #Run in test
@@ -59,6 +59,11 @@ x_train = np.array(x_train)
 y_train = np.array(y_train)
 x_test = np.array(x_test)
 y_test = np.array(y_test)
+
+#print('x_train shape:', x_train.shape)
+#print('y_train shape:', y_train.shape)
+#print('x_test shape:', x_test.shape)
+#print('y_test shape:', y_test.shape)
 
 x_train.shape
 y_train.shape
