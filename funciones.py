@@ -8,8 +8,6 @@ def img2data(path, width=80):
     
     rawImgs = []   #### una lista con el array que representa cada imágen
     labels = [] ### el label de cada imágen
-    tumor_positive_imgs = [] ### lista para almacenar imágenes de tumor positivo
-
     
     list_labels = [path+f for f in listdir(path)] ### crea una lista de los archivos en la ruta (glaucoma_negative/glaucoma_positive)
 
@@ -23,12 +21,12 @@ def img2data(path, width=80):
                 img = cv2.cvtColor(img , cv2.COLOR_BGR2RGB) ### invierte el orden de los colores en el array para usar el más estándar RGB
                 img = cv2.resize(img ,(width,width)) ### cambia resolución de imágnenes
                 rawImgs.append(img) ### adiciona imágen al array final
-                l = imagePath.split('/')[3] ### identificar en qué carpeta está
+                l = imagePath.split('/')[2] ### identificar en qué carpeta está
                 if l == 'notumor':  ### verificar en qué carpeta está para asignar el label
                     labels.append([0])
-                else:
-                    if l == 'glioma' or l == 'meningioma' or l == 'pituitary':
-                        labels.append([1])
-                        tumor_positive_imgs.append(img)
+                elif l == 'glioma':
+                    labels.append([1])   
+                    #if l == 'glioma' or l == 'meningioma' or l == 'pituitary':
+                        #labels.append([1])
     return rawImgs, labels
 

@@ -9,8 +9,8 @@ import joblib ### para descargar array
 ##### ver ejemplo de imágenes cargadas ######
 #############################################
 
-img1 = cv2.imread('testing/notumor/Te-no_0118.jpg')
-img2 = cv2.imread('training/meningioma/Tr-me_0189.jpg')
+img1 = cv2.imread('data_brain/testing/notumor/Te-no_0118.jpg')
+img2 = cv2.imread('data_brain/training/meningioma/Tr-me_0189.jpg')
 
 ############################################
 ##### ver ejemplo de imágenes cargadas ######
@@ -47,8 +47,8 @@ plt.show()
 
 width = 80 #tamaño para reescalar imágen
 num_classes = 2 #clases variable respuesta
-trainpath = 'training/'
-testpath = 'testing/'
+trainpath = 'data_brain/training/'
+testpath = 'data_brain/testing/'
 
 x_train, y_train= fn.img2data(trainpath) #Run in train
 x_test, y_test = fn.img2data(testpath) #Run in test
@@ -59,11 +59,6 @@ x_train = np.array(x_train)
 y_train = np.array(y_train)
 x_test = np.array(x_test)
 y_test = np.array(y_test)
-
-#print('x_train shape:', x_train.shape)
-#print('y_train shape:', y_train.shape)
-#print('x_test shape:', x_test.shape)
-#print('y_test shape:', y_test.shape)
 
 x_train.shape
 y_train.shape
