@@ -9,7 +9,7 @@ def img2data(path, width=80):
     rawImgs = []   #### una lista con el array que representa cada imágen
     labels = [] ### el label de cada imágen
     
-    list_labels = [path+f for f in listdir(path)] ### crea una lista de los archivos en la ruta (glaucoma_negative/glaucoma_positive)
+    list_labels = [path+f for f in listdir(path)] ### crea una lista de los archivos en la ruta (_negative/glaucoma_positive)
 
     for imagePath in ( list_labels): ### recorre cada carpeta de la ruta ingresada
         
@@ -24,9 +24,8 @@ def img2data(path, width=80):
                 l = imagePath.split('/')[2] ### identificar en qué carpeta está
                 if l == 'notumor':  ### verificar en qué carpeta está para asignar el label
                     labels.append([0])
-                elif l == 'glioma':
-                    labels.append([1])   
-                    #if l == 'glioma' or l == 'meningioma' or l == 'pituitary':
-                        #labels.append([1])
+                else:
+                    labels.append([1])
+                    
     return rawImgs, labels
 
