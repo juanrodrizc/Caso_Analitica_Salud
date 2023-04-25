@@ -4,10 +4,13 @@ import cv2 ### para leer imagenes jpg
 from matplotlib import pyplot as plt ## para gráfciar imágnes
 import funciones as fn ### funciones personalizadas, carga de imágenes
 import joblib ### para descargar array
+from PIL import Image
 
-############################################
+# Diseño de la solución
+i=Image.open('diseno_solucion.png','r') 
+i.show()
+
 ##### ver ejemplo de imágenes cargadas ######
-#############################################
 
 img1 = cv2.imread('data_brain/testing/notumor/Te-no_0118.jpg')
 img1_1 = cv2.imread('data_brain/testing/glioma/Te-gl_0010.jpg')
@@ -19,10 +22,7 @@ img2_1 = cv2.imread('data_brain/training/glioma/Tr-gl_0010.jpg')
 img2_2 = cv2.imread('data_brain/training/pituitary/Tr-pi_0010.jpg')
 img2_3 = cv2.imread('data_brain/training/meningioma/Tr-me_0010.jpg')
 
-
-############################################
 ##### ver ejemplo de imágenes cargadas ######
-#############################################
 
 plt.imshow(img1)
 plt.title('negative')
@@ -93,14 +93,8 @@ num_classes = 2 #clases variable respuesta
 trainpath = 'data_brain/training/'
 testpath = 'data_brain/testing/'
 
-data_train=fn.img2data(trainpath) #Run in train
-
-data_test=fn.img2data(testpath) #Run in test
-
-
 x_train, y_train= fn.img2data(trainpath) #Run in train
 x_test, y_test = fn.img2data(testpath) #Run in test
-
 
 #### convertir salidas a numpy array ####
 x_train = np.array(x_train)
