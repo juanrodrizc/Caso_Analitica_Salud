@@ -75,13 +75,57 @@ print(metrics.classification_report(y_test, pred_test))
 
 ##Seleccionar un indicador
 
-# Precision Tasa de acierto en predichos positivos ( qué porcentaje de personas identificada con tumor realmente tienen)
-# Recall: Tasa de identficación de positivos (de los que tenían neumonía cuantos predije tenían)
-### F1_Socre: Combina Precions y recall (promedio entre dos anteriores)
-### Acurracy: Porcentaje de acertados
-### AUC: detección de positivos vs mala clasificaicón de negativos: porcentaje de los que neumonía que identifico vs los normales que digo que tiene neumonía
+### Se utilizará AUC: detección de positivos vs mala clasificaicón de negativos: porcentaje de los que tienen tumor que identifico vs los normales que dijo que tienen tumor
 
 ############Analisis problema ###########
 
+###########Estrategias a usar: regilarization usar una a la vez para ver impacto
+dropout_rate = 0.8 ## porcentaje de neuronas que elimina
+
+fc_model2=tf.keras.models.Sequential([
+    tf.keras.layers.Flatten(input_shape=x_train.shape[1:]),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dropout(dropout_rate),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dropout(dropout_rate),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dropout(dropout_rate),
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dropout(dropout_rate),
+    tf.keras.layers.Dense(1, activation='sigmoid')
+])
+
+#### configura el optimizador y la función para optimizar ##############
+
+
+fc_model2.compile(optimizer='adam', loss='binary_crossentropy', metrics=['AUC'])
+
+
+#####Entrenar el modelo usando el optimizador y arquitectura definidas #########
+fc_model2.fit(x_train, y_train, batch_size=100, epochs=10, validation_data=(x_test, y_test))
+
+####################### aplicar dos regularizaciones L2 y drop out
+
+#Se puede aplicar regularización L1 o L2 a las capas densas para reducir el sobreajuste y mejorar el rendimiento del modelo en el conjunto de datos de validación.
+###Penaliza el tamaño de los pesos, mientras más grande la penalización menores son los valores de los coeficientes
+
+reg_strength = 0.0001
+
+###########Estrategias a usar: regilarization usar una a la vez para ver impacto
+dropout_rate = 0.98 ## porcentaje de neuronas que utiliza 
+
+fc_model3=tf.keras.models.Sequential([
+    tf.keras.layers.Flatten(input_shape=x_train.shape[1:]),
+    tf.keras.layers.Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(reg_strength)),
+    tf.keras.layers.Dropout(dropout_rate),
+    tf.keras.layers.Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(reg_strength)),
+    tf.keras.layers.Dropout(dropout_rate),
+    tf.keras.layers.Dense(1, activation='sigmoid')
+])
+##### configura el optimizador y la función para optimizar ##############
+fc_model3.compile(optimizer='adam', loss='binary_crossentropy', metrics=['AUC'])
+
+#####Entrenar el modelo usando el optimizador y arquitectura definidas #########
+fc_model3.fit(x_train, y_train, batch_size=100, epochs=10, validation_data=(x_test, y_test))
 
 
