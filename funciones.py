@@ -25,6 +25,6 @@ def img2data(path, width=80):
             img = cv2.cvtColor(img , cv2.COLOR_BGR2RGB)    # convierte la imagen de BGR a RGB
             img = cv2.resize(img, (width, width))          # cambia el tamaño de la imagen 
             rawImgs.append(img)           # agrega la imagen procesada a la lista 
-            labels.append([1 if label == 'tumor' else 0])   # agrega la etiqueta correspondiente a la lista "labels", donde 1 indica "tumor" y 0 indica "no tumor"
+            labels.append([0 if label == 'notumor' else 1])   # agrega la etiqueta correspondiente a la lista "labels", donde 1 indica "tumor" y 0 indica "no tumor"
                     
     return rawImgs, labels  

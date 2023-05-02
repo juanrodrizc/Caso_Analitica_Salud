@@ -13,7 +13,7 @@ import tensorflow as tf #!pip install tensorflow
 from sklearn import metrics ### para analizar modelo
 from sklearn.ensemble import RandomForestClassifier  ### para analizar modelo
 
-### cargar bases_procesadas ####
+### cargar bases_procesadas previamente####
 
 x_train = joblib.load('x_train.pkl')
 y_train = joblib.load('y_train.pkl')
@@ -69,7 +69,7 @@ print("Test auc:", test_auc)
 
 pred_test=(modelo1.predict(x_test) > 0.50).astype('int')
 cm=metrics.confusion_matrix(y_test,pred_test, labels=[1,0])
-disp=metrics.ConfusionMatrixDisplay(cm,display_labels=['Pneu', 'Normal'])
+disp=metrics.ConfusionMatrixDisplay(cm,display_labels=['Tumor', 'Normal'])
 disp.plot()
 print(metrics.classification_report(y_test, pred_test))
 
@@ -80,7 +80,7 @@ print(metrics.classification_report(y_test, pred_test))
 ############Analisis problema ###########
 
 ###########Estrategias a usar: regilarization usar una a la vez para ver impacto
-dropout_rate = 0.8 ## porcentaje de neuronas que elimina
+dropout_rate = 0.3 ## porcentaje de neuronas que se desactivaran si hay un sobreajuste
 
 fc_model2=tf.keras.models.Sequential([
     tf.keras.layers.Flatten(input_shape=x_train.shape[1:]),
@@ -112,7 +112,7 @@ fc_model2.fit(x_train, y_train, batch_size=100, epochs=10, validation_data=(x_te
 reg_strength = 0.0001
 
 ###########Estrategias a usar: regilarization usar una a la vez para ver impacto
-dropout_rate = 0.98 ## porcentaje de neuronas que utiliza 
+dropout_rate = 0.4 ## porcentaje de neuronas que utiliza 
 
 fc_model3=tf.keras.models.Sequential([
     tf.keras.layers.Flatten(input_shape=x_train.shape[1:]),
