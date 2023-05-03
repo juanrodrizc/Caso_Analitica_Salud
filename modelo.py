@@ -64,6 +64,7 @@ modelo1.fit(x_train, y_train, batch_size=100, epochs=10, validation_data=(x_test
 test_loss, test_acc, test_auc, test_recall, test_precision = modelo1.evaluate(x_test, y_test, verbose=2)
 print("Test auc:", test_auc)
 
+#No hay sobreajuste(overfitting) ni subajuste(underfitting) por lo tanto no se realizará ninguna tecnica de regularización.
 
 #Matriz de confusión
 
@@ -79,53 +80,97 @@ print(metrics.classification_report(y_test, pred_test))
 
 ############Analisis problema ###########
 
-###########Estrategias a usar: regilarization usar una a la vez para ver impacto
-dropout_rate = 0.3 ## porcentaje de neuronas que se desactivaran si hay un sobreajuste
+##########################################################
+################ Redes convolucionales ###################
+##########################################################
 
-fc_model2=tf.keras.models.Sequential([
-    tf.keras.layers.Flatten(input_shape=x_train.shape[1:]),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dropout(dropout_rate),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dropout(dropout_rate),
-    tf.keras.layers.Dense(128, activation='relu'),
-    tf.keras.layers.Dropout(dropout_rate),
+cnn_model = tf.keras.Sequential([
+    tf.keras.layers.Conv2D(16, kernel_size=(3, 3), activation='relu', input_shape=x_train.shape[1:]),
+    tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+    tf.keras.layers.Conv2D(32, kernel_size=(3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+    tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(64, activation='relu'),
-    tf.keras.layers.Dropout(dropout_rate),
     tf.keras.layers.Dense(1, activation='sigmoid')
 ])
 
-#### configura el optimizador y la función para optimizar ##############
+# Compile the model with binary cross-entropy loss and Adam optimizer
+cnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['AUC'])
+
+# Train the model for 10 epochs
+cnn_model.fit(x_train, y_train, batch_size=100, epochs=10, validation_data=(x_test, y_test))
 
 
-fc_model2.compile(optimizer='adam', loss='binary_crossentropy', metrics=['AUC'])
+#######probar una red con regulzarización
 
 
-#####Entrenar el modelo usando el optimizador y arquitectura definidas #########
-fc_model2.fit(x_train, y_train, batch_size=100, epochs=10, validation_data=(x_test, y_test))
+#####################################################
+###### afinar hiperparameter ########################
+#####################################################
+####instalar paquete !pip install keras-tuner
 
-####################### aplicar dos regularizaciones L2 y drop out
+import keras_tuner as kt
 
-#Se puede aplicar regularización L1 o L2 a las capas densas para reducir el sobreajuste y mejorar el rendimiento del modelo en el conjunto de datos de validación.
-###Penaliza el tamaño de los pesos, mientras más grande la penalización menores son los valores de los coeficientes
 
-reg_strength = 0.0001
+##### función con definicion de hiperparámetros a afinar
 
-###########Estrategias a usar: regilarization usar una a la vez para ver impacto
-dropout_rate = 0.4 ## porcentaje de neuronas que utiliza 
+def build_model(hp):
+    
+    dropout_rate=hp.Float('DO', min_value=0.1, max_value= 0.4, step=0.05)
+    reg_strength = hp.Float("rs", min_value=0.0001, max_value=0.0005, step=0.0001)
+    ####hp.Int
+    ####hp.Choice
+    
 
-fc_model3=tf.keras.models.Sequential([
-    tf.keras.layers.Flatten(input_shape=x_train.shape[1:]),
-    tf.keras.layers.Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(reg_strength)),
-    tf.keras.layers.Dropout(dropout_rate),
-    tf.keras.layers.Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(reg_strength)),
-    tf.keras.layers.Dropout(dropout_rate),
-    tf.keras.layers.Dense(1, activation='sigmoid')
-])
-##### configura el optimizador y la función para optimizar ##############
-fc_model3.compile(optimizer='adam', loss='binary_crossentropy', metrics=['AUC'])
+    model=tf.keras.models.Sequential([
+        tf.keras.layers.Flatten(input_shape=x_train.shape[1:]),
+        tf.keras.layers.Dense(128, activation='relu',kernel_regularizer=tf.keras.regularizers.l2(reg_strength)),
+        tf.keras.layers.Dropout(dropout_rate),
+        tf.keras.layers.Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(reg_strength)),
+        tf.keras.layers.Dropout(dropout_rate),
+        tf.keras.layers.Dense(1, activation='sigmoid')
+    ])
+   
+    optimizer = hp.Choice('optimizer', ['adam', 'sgd', 'rmsprop'])
+    if optimizer == 'adam':
+        opt = tf.keras.optimizers.Adam(learning_rate=0.001)
+    elif optimizer == 'sgd':
+        opt = tf.keras.optimizers.SGD(learning_rate=0.01)
+    else:
+        opt = tf.keras.optimizers.RMSprop(learning_rate=0.0001)
+   
+    model.compile(
+        optimizer=opt, loss="binary_crossentropy", metrics=["AUC"],
+    )
+    return model
 
-#####Entrenar el modelo usando el optimizador y arquitectura definidas #########
-fc_model3.fit(x_train, y_train, batch_size=100, epochs=10, validation_data=(x_test, y_test))
 
+
+
+###########
+hp = kt.HyperParameters()
+build_model(hp)
+
+tuner = kt.RandomSearch(
+    hypermodel=build_model,
+    hyperparameters=hp,
+    tune_new_entries=False, ## solo evalúe los hiperparámetros configurados
+    objective=kt.Objective("val_auc", direction="max"),
+    max_trials=10,
+    overwrite=True,
+    directory="my_dir",
+    project_name="helloworld", 
+)
+
+tuner.search(x_train, y_train, epochs=3, validation_data=(x_test, y_test), batch_size=100)
+
+fc_best_model = tuner.get_best_models(num_models=1)[0]
+tuner.results_summary()
+
+
+
+#################### Mejor redes ##############
+
+joblib.dump(fc_best_model, 'fc_model.pkl')
+joblib.dump(cnn_model,'cnn_model.pkl')
 
