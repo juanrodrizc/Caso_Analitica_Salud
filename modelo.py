@@ -93,6 +93,8 @@ cnn_model = tf.keras.Sequential([
     tf.keras.layers.Dense(64, activation='relu'),
     tf.keras.layers.Dense(1, activation='sigmoid')
 ])
+#No se aplica regularización Dropout ni L2 ya que en nuestro modelo no hay underfitting ni overfitting.
+
 
 # Compile the model with binary cross-entropy loss and Adam optimizer
 cnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['AUC'])
@@ -143,9 +145,6 @@ def build_model(hp):
         optimizer=opt, loss="binary_crossentropy", metrics=["AUC"],
     )
     return model
-
-
-
 
 ###########
 hp = kt.HyperParameters()

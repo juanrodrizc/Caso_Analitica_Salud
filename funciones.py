@@ -28,3 +28,4 @@ def img2data(path, width=80):
             labels.append([0 if label == 'notumor' else 1])   # agrega la etiqueta correspondiente a la lista "labels", donde 1 indica "tumor" y 0 indica "no tumor"
                     
     return rawImgs, labels  
+
