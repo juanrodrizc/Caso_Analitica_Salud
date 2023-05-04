@@ -1,5 +1,4 @@
 
-
 import os  # para hacer lista de archivos en una ruta
 import cv2  # para leer imagenes jpg y jpeg
 from tqdm import tqdm  # mostrar barras de progreso en los bucles del for
