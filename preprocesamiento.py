@@ -25,7 +25,7 @@ img2_3 = cv2.imread('data_brain/training/meningioma/Tr-me_0010.jpg')
 ##### ver ejemplo de imágenes cargadas ######
 
 plt.imshow(img1)
-plt.title('negative')
+plt.title('notumor')
 plt.show()
 
 plt.imshow(img1_1)
@@ -80,7 +80,7 @@ np.prod(img2.shape) ### 151875 millones de observaciones cada imágen
 
 img1 = cv2.resize(img1 ,(80,80))
 plt.imshow(img1)
-plt.title('positive')
+plt.title('notumor')
 plt.show()
 
 ################################################################
